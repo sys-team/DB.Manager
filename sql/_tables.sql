@@ -67,13 +67,13 @@ create table dbm.gitCommit (
     sha varchar(256) not null unique,
     summary long varchar,
     
-    not null foreign key(gitProjectBranch) references dbm.gitProjectBranch,
+    not null foreign key(gitProjectBranchFolder) references dbm.gitProjectBranchFolder,
     
     id ID, xid GUID, ts TS, cts CTS,
     unique (xid), primary key (id) 
 )
 ;
-comment on table dbm.gitCommit is 'Github ptoject branch commit'
+comment on table dbm.gitCommit is 'Github project branch commit'
 ;
 
 create table dbm.gitFile(
