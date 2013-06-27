@@ -92,3 +92,34 @@ create table dbm.gitFile(
 comment on table dbm.gitFile is 'Github file'
 ;
 
+create table dbm.db(
+
+    name varchar(256) not null unique,
+
+    id ID, xid GUID, ts TS, cts CTS,
+    unique (xid), primary key (id) 
+)
+;
+comment on table dbm.db is 'Database-client'
+;
+
+create table dbm.dbGitProjectBranchFolder(
+
+    active integer default 1,
+    syncTs datetime,
+    
+    db ID,
+    gitProjectBranchFolder ID,
+
+    not null foreign key(db) references dbm.db,
+    not null foreign key(gitProjectBranchFolder) references dbm.gitProjectBranchFolder,
+
+    unique(db, gitProjectBranchFolder),
+
+    id ID, xid GUID, ts TS, cts CTS,
+    unique (xid), primary key (id) 
+)
+;
+comment on table dbm.dbGitProjectBranchFolder is 'Database-client branch subscription'
+;
+
