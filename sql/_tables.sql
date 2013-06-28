@@ -95,6 +95,7 @@ comment on table dbm.gitFile is 'Github file'
 create table dbm.db(
 
     name varchar(256) not null unique,
+    code varchar(256) not null unique,
 
     id ID, xid GUID, ts TS, cts CTS,
     unique (xid), primary key (id) 

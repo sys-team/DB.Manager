@@ -4,6 +4,10 @@ alter event dbm.dbm_chestDataPersist
 handler
 begin
 
+    if EVENT_PARAMETER('NumActive') <> '1' then 
+        return;
+    end if;
+
     call dbm.chestDataPersist();
 
     exception  
