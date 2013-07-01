@@ -1,4 +1,4 @@
-sa_make_object 'event', 'dbm_chestDataPersist', 'dbm'
+call sa_make_object('event', 'dbm_chestDataPersist', 'dbm')
 ;
 alter event dbm.dbm_chestDataPersist
 handler

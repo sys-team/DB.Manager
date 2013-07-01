@@ -15,6 +15,8 @@ begin
     
     insert into #allowedExt values('sql');
     
+
+    
     for lloop as ccur cursor for
     select f.id as c_id,
            f.data as c_data, 
@@ -32,13 +34,22 @@ begin
                            and data is null)
      order by c.serverTs
     do
+        set @xid = newid();
+        
+        insert into dbmc.applyLog with auto name
+        select @xid as xid,
+               c_id as fileId;
             
-        message 'dbmc.applyFiles c_data = ', c_data;
+        --message 'dbmc.applyFiles c_data = ', c_data;
         execute immediate 'begin ' + c_data + ' end';
         
         update dbmc.DBMServerGitFile
            set processed = 1
          where id = c_id;
+         
+        update dbmc.applyLog
+           set result = 'ok'
+         where xid = @xid;
          
         commit;
         

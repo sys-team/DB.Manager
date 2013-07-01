@@ -15,7 +15,7 @@ begin
 
     exception  
     when others then   
-        call util.errorHandler('dbm.refreshGit', @SQLSTATE, errormsg());
+        call util.errorHandler('dbm.refreshGit', SQLSTATE, errormsg());
         rollback;
         
 end
