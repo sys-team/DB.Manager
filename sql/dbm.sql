@@ -1,8 +1,6 @@
 create or replace function dbm.dbm(
     @url long varchar,
-    @refreshToken long varchar default http_variable('refresh_token'),
-    @clientId long varchar default http_variable('client_id'),
-    @clientSecret long varchar default http_variable('client_secret'),
+    @accessToken long varchar default http_variable('access_token'),
     @command long varchar default http_variable('command'),
     @sha long varchar default http_variable('sha')
 )
@@ -19,7 +17,7 @@ begin
     select @xid as xid;
     
     // Auth
-    set @roles = uac.UOAuthRefreshToken(@refreshToken, @clientId, @clientSecret);
+    set @roles = uac.UOAuthAuthorize(@accessToken);
     // roles check
     if varexists('@db') = 0 then create variable @db integer end if;
     

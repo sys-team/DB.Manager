@@ -1,5 +1,9 @@
 create or replace procedure dbmc.applyFiles()
 begin
+    declare @file ID;
+    declare @error long varchar;
+    declare @sqlstate long varchar;
+    declare @xid GUID;
     
     declare local temporary table
     #forbiddenName(name long varchar unique)
@@ -14,8 +18,6 @@ begin
     insert into #forbiddenName values('_windows_deploy.sql');
     
     insert into #allowedExt values('sql');
-    
-
     
     for lloop as ccur cursor for
     select f.id as c_id,
@@ -35,13 +37,15 @@ begin
      order by c.serverTs
     do
         set @xid = newid();
+        set @file = c_id;
         
         insert into dbmc.applyLog with auto name
         select @xid as xid,
                c_id as fileId;
             
         --message 'dbmc.applyFiles c_data = ', c_data;
-        execute immediate 'begin ' + c_data + ' end';
+        --execute immediate 'begin ' + c_data + ' end';
+        execute immediate c_data;
         
         update dbmc.DBMServerGitFile
            set processed = 1
@@ -54,7 +58,35 @@ begin
         commit;
         
     end for;
+    
+    set @file = null;
+    
+    -- update forbidden
+    update dbmc.DBMServerGitFile
+       set processed = 2
+     where processed = 0
+       and (substr(name, locate(name,'.',-1) +1) not in (select ext from #allowedExt)
+        or substr(name, locate(name,'/',-1) +1) in (select name from #forbiddenName));
 
     return;
+    
+    exception  
+        when others then
+        
+            set @error = errormsg();
+            set @sqlstate = SQLSTATE;
+            
+            update dbmc.DBMServerGitFile
+               set processed = -1
+            where id = @file;
+            
+            commit;
+                
+            call util.errorHandler('dbmc.applyFiles', @sqlstate, @error);
+            
+            update dbmc.applyLog
+               set result = @error
+             where xid = @xid;
+        
 end
 ;

@@ -23,7 +23,7 @@ begin
     exception  
     when others then
         set @error = errormsg();
-        call util.errorHandler('dbmc.applyFiles', SQLSTATE, @error);
+        call util.errorHandler('dbmc.processServer', SQLSTATE, @error);
         
         rollback;
 end

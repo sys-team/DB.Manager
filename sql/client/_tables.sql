@@ -50,3 +50,5 @@ create table dbmc.DBMServerGitFile(
 ;
 comment on table dbmc.DBMServerGitFile is 'Git-file received from DB.Manager server'
 ;
+create index xk_DBMServerGitFile_processed on dbmc.DBMServerGitFile(processed)
+;

@@ -10,7 +10,9 @@ begin
     declare @UOAuthClient long varchar;
     declare @UOAuthClientSecret long varchar;
     declare @UOAuthRefreshToken long varchar;
+    declare @accessToken long varchar;
     declare @response long varchar;
+    declare @roles xml; 
     
     select url,
            cert,
@@ -26,12 +28,17 @@ begin
         return null;
     end if;
     
+    set @roles = uac.UOAuthRefreshToken(@UOAuthRefreshToken, @UOAuthClient, @UOAuthClientSecret);
+
+    set @accessToken = (select access_token
+                          from openxml(@roles, '/*:response')
+                                with(access_token long varchar '*:access-token'));
+                                
+    
     set @response = dbmc.query(
                                 @url,
                                 @cert,
-                                @UOAuthRefreshToken,
-                                @UOAuthClient,
-                                @UOAuthClientSecret,
+                                @accessToken,
                                 @command,
                                 @sha
                             );
