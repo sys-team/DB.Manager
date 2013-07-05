@@ -66,6 +66,7 @@ create table dbm.gitCommit (
 
     sha varchar(256) not null unique,
     summary long varchar,
+    UTs varchar(64),
     
     not null foreign key(gitProjectBranchFolder) references dbm.gitProjectBranchFolder,
     

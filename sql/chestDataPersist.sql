@@ -16,6 +16,7 @@ begin
                where sha = t.code) as id,
             t.code as sha,
             t.[message] as summary,
+            t.[date] as UTs,
            (select pbf.id
               from dbm.gitProjectBranchFolder pbf join dbm.gitProjectBranch pb on pbf.gitProjectBranch = pb.id
                                                   join dbm.gitProject p on pb.gitProject = p.id
@@ -24,19 +25,20 @@ begin
                and pb.name = t.branch
                and p.name = t.repo
                and u.name = t.owner) as gitProjectBranchFolder
-       from ch.entity e outer apply(select *
-                                      from openxml(e.xmlData,'/*')
-                                           with(
-                                            code long varchar '@code', 
-                                            [date] long varchar '*[@name="date"]',
-                                            [message] long varchar '*[@name="message"]',
-                                            owner long varchar '*[@name="owner"]',
-                                            repo long varchar '*[@name="repo"]',
-                                            path long varchar '*[@name="path"]',
-                                            branch long varchar '*[@name="branch"]'
-                                           )) as t
+       from ch.entity e outer apply (select *
+                                       from openxml(e.xmlData,'/*')
+                                            with(
+                                                code long varchar '@code', 
+                                                [date] long varchar '*[@name="date"]',
+                                                [message] long varchar '*[@name="message"]',
+                                                owner long varchar '*[@name="owner"]',
+                                                repo long varchar '*[@name="repo"]',
+                                                path long varchar '*[@name="path"]',
+                                                branch long varchar '*[@name="branch"]'
+                                            )) as t
       where e.name = 'gitclient.commit'
-        and e.ts >= @ets;
+        and e.ts >= @ets
+      order by e.ts;
         
     insert into ch.persistEntityData on existing update with auto name
     select (select id
