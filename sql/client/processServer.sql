@@ -3,9 +3,21 @@ create or replace procedure dbmc.processServer(
 )
 begin
     declare @response xml;
+    declare @xid GUID;
     
     -- gitFileList
+    set @xid = newid();
+    
+    insert into dbmc.log with auto name
+    select @xid as xid,
+           @server as server,
+           'gitfilelist' as command;
+    
     set @response = dbmc.serverQuery(@server, 'gitfilelist');
+    
+    update dbmc.log
+       set response = @response
+     where xid = @xid;
     
     insert into dbmc.DBMServerGitCommit on existing update with auto name
     select (select id
@@ -50,7 +62,20 @@ begin
        and f.data is null
      order by c.serverTs
     do
+    
+        set @xid = newid();
+        
+        insert into dbmc.log with auto name
+        select @xid as xid,
+               @server as server,
+               c_id as file,
+               'gitfiledata' as command;
+               
         set @response = dbmc.serverQuery(@server, 'gitfiledata', c_sha);
+        
+        update dbmc.log
+           set response = @response
+         where xid = @xid;
         
         update dbmc.DBMServerGitFile
            set data = (select filedata
