@@ -14,7 +14,7 @@ begin
            dpbf.id as c_dpbf
       from dbm.gitProjectBranchFolder pbf join dbm.dbGitProjectBranchFolder dpbf on pbf.id = dpbf.gitProjectBranchFolder
      where dpbf.active = 1
-       and dpbf.db = db
+       and dpbf.db = @db
     do
 
         set @result = xmlconcat(@result,
