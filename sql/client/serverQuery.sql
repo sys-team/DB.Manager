@@ -40,7 +40,9 @@ begin
                                 @cert,
                                 @accessToken,
                                 @command,
-                                @sha
+                                @sha,
+                                @@servername,
+                                db_name()
                             );
                             
     return @response;

@@ -2,7 +2,9 @@ create or replace function dbm.dbm(
     @url long varchar,
     @accessToken long varchar default http_variable('access_token'),
     @command long varchar default http_variable('command'),
-    @sha long varchar default http_variable('sha')
+    @sha long varchar default http_variable('sha'),
+    @serverName long varchar default http_variable('server_name'),
+    @dbName long varchar default http_variable('db_name')
 )
 returns xml
 begin
@@ -26,7 +28,9 @@ begin
                                              data
                                         from openxml(@roles, '/*:response/*:roles/*:role')
                                              with(code STRING '*:code', data STRING '*:data')) as t on t.data =  db.code
-                where t.code = 'dbmc');
+                where t.code = 'dbmc'
+                  and db.serverName = @serverName
+                  and db.dbName = @dbName);
                 
     if @db is null then
         set @response = dbm.responseRootElement(xmlelement('error', 'Not authorized'));

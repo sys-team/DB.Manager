@@ -97,6 +97,8 @@ create table dbm.db(
 
     name varchar(256) not null unique,
     code varchar(256) not null unique,
+    serverName varchar(256) not null,
+    dbName varchar(256) not null,
 
     id ID, xid GUID, ts TS, cts CTS,
     unique (xid), primary key (id) 
